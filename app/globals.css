@@ -26,3 +26,10 @@ main {
 footer {
   flex-shrink: 0;
 }
+
+.img {
+  position: relative;
+  margin: 5px;
+  max-height: 350px;
+  object-fit: cover;
+}
