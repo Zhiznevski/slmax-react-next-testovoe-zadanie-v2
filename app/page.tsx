@@ -6,13 +6,16 @@ import { useEffect, useState } from 'react';
 import { Basic } from 'unsplash-js/dist/methods/photos/types';
 import { Basic as Topics } from 'unsplash-js/dist/methods/topics/types';
 import styles from './gallery.module.css';
-import { MenuItem, Select, SelectChangeEvent } from '@mui/material';
+import { CircularProgress, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { SearchOrderBy } from 'unsplash-js/dist/methods/search/types/request';
 import getCategories from '@/utils/getCategories';
 import Photo from '@/components/Photo';
 
 export default function Home() {
-  const storedItems: string[] = typeof window !== "undefined" ? JSON.parse(localStorage.getItem('items') as string) || [] : false;
+  const storedItems: string[] =
+    typeof window !== 'undefined'
+      ? JSON.parse(localStorage.getItem('items') as string) || []
+      : false;
 
   const [photos, setPhotos] = useState<Basic[] | undefined>(undefined);
   const [page, setPage] = useState(1);
@@ -20,18 +23,20 @@ export default function Home() {
   const [topic, setTopic] = useState('');
   const [sorting, setSorting] = useState<SearchOrderBy | undefined>('relevant');
   const [likes, setLikes] = useState<string[]>(storedItems);
+  const [isLoading, setIsLoading] = useState(false);
 
   const addItem = (id: string) => {
     if (!likes.includes(id)) {
-      setLikes([...likes, id])
+      setLikes([...likes, id]);
     }
-}
+  };
   const sortingHandler = (event: SelectChangeEvent): void => {
     const sort = event.target.value as SearchOrderBy;
     setSorting(sort);
   };
 
   useEffect(() => {
+    setIsLoading(true);
     api.search
       .getPhotos({
         query: topic || 'corgi',
@@ -42,21 +47,31 @@ export default function Home() {
       })
       .then((photos) => {
         setPhotos(photos.response?.results);
+        setIsLoading(false);
       })
-      .catch(error => console.error(error))
+      .catch((error) => console.error(error));
   }, [page, topic, sorting]);
 
   useEffect(() => {
-      getCategories()
+    getCategories()
       .then((topics) => {
         setCategories(topics.response?.results);
       })
-      .catch(error => console.error(error))
+      .catch((error) => console.error(error));
   }, []);
 
   useEffect(() => {
     localStorage.setItem('items', JSON.stringify(likes));
   }, [likes]);
+
+  if (isLoading) {
+    return (
+      <div className={styles.loading}>
+        <CircularProgress color="inherit" />
+        Loading...
+      </div>
+    );
+  }
   return (
     <div className={styles.wrapper}>
       <div className={styles.controls}>
@@ -70,7 +85,7 @@ export default function Home() {
           ))}
         </ul>
         <Select
-          sx={{ marginRight: 4, color: '#767676' }}
+          sx={{ marginRight: 4, alignSelf: 'flex-end', color: '#767676' }}
           variant="standard"
           value={sorting}
           onChange={sortingHandler}
@@ -80,9 +95,7 @@ export default function Home() {
         </Select>
       </div>
       <div className={styles.photosWrapper}>
-        {photos?.map((photo) => (
-          <Photo key={photo.id} photo={photo} addItem={addItem}/>
-        ))}
+        {photos?.map((photo) => <Photo key={photo.id} photo={photo} addItem={addItem} />)}
       </div>
       <Pagination
         sx={{ alignSelf: 'center' }}

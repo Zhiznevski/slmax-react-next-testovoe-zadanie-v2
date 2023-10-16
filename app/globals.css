@@ -24,7 +24,7 @@ a {
 a:hover {
   cursor: pointer;
   text-decoration: underline;
-  transition: .3s;
+  transition: 0.3s;
 }
 
 main {
@@ -35,4 +35,10 @@ main {
 
 footer {
   flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+  html {
+    font-size: 0.8rem;
+  }
 }
