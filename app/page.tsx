@@ -13,9 +13,7 @@ import Photo from '@/components/Photo';
 
 export default function Home() {
   const storedItems: string[] =
-    typeof window !== 'undefined'
-      ? JSON.parse(localStorage.getItem('items') as string) || []
-      : false;
+    typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('items') as string) || [] : [];
 
   const [photos, setPhotos] = useState<Basic[] | undefined>(undefined);
   const [page, setPage] = useState(1);

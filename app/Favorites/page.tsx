@@ -6,11 +6,9 @@ import styles from './Favorites.module.css';
 import Button from '@mui/material/Button/Button';
 import img from './../../public/empty.png';
 
-function Favorites() {
+export default function Favorites() {
   const storedItems: string[] =
-    typeof window !== 'undefined'
-      ? JSON.parse(localStorage.getItem('items') as string) || []
-      : false;
+    typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('items') as string) || [] : [];
   const [photos, setPhotos] = useState(storedItems);
 
   return (
@@ -36,5 +34,3 @@ function Favorites() {
     </div>
   );
 }
-
-export default Favorites;
