@@ -19,7 +19,7 @@ function Header() {
         </Link>
       )}
       {session.data ? (
-        <Link className={styles.link} href="#" onClick={() => signOut({ callbackUrl: '/' })}>
+        <Link className={styles.link} href="#" onClick={() => signOut({ callbackUrl: "/" })}>
           LogOut
         </Link>
       ) : (
