@@ -46,8 +46,8 @@ function Photo({ photo, addItem }: Props) {
         key={photo.id}
         src={photo.urls.regular}
         alt={photo.alt_description || 'Picture'}
-        width={380}
-        height={270}
+        width={360}
+        height={260}
         priority
       />
     </div>
