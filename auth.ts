@@ -1,4 +1,4 @@
-import Google from "next-auth/providers/google"
+import Google from "next-auth/providers/google";
 
 export const config = {
     providers: [
