@@ -5,18 +5,27 @@ import Pagination from '@mui/material/Pagination';
 import { useEffect, useState } from 'react';
 import { Basic } from 'unsplash-js/dist/methods/photos/types';
 import { Basic as Topics } from 'unsplash-js/dist/methods/topics/types';
-import Image from 'next/image';
 import styles from './gallery.module.css';
 import { MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import { SearchOrderBy } from 'unsplash-js/dist/methods/search/types/request';
+import getCategories from '@/utils/getCategories';
+import Photo from '@/components/Photo';
 
-function Home() {
+export default function Home() {
+  const storedItems: string[] = typeof window !== "undefined" ? JSON.parse(localStorage.getItem('items') as string) || [] : false;
+
   const [photos, setPhotos] = useState<Basic[] | undefined>(undefined);
   const [page, setPage] = useState(1);
   const [categories, setCategories] = useState<Topics[] | undefined>(undefined);
   const [topic, setTopic] = useState('');
   const [sorting, setSorting] = useState<SearchOrderBy | undefined>('relevant');
+  const [likes, setLikes] = useState<string[]>(storedItems);
 
+  const addItem = (id: string) => {
+    if (!likes.includes(id)) {
+      setLikes([...likes, id])
+    }
+}
   const sortingHandler = (event: SelectChangeEvent): void => {
     const sort = event.target.value as SearchOrderBy;
     setSorting(sort);
@@ -25,7 +34,7 @@ function Home() {
   useEffect(() => {
     api.search
       .getPhotos({
-        query: topic || 'cat',
+        query: topic || 'corgi',
         page: page,
         perPage: 9,
         orientation: 'landscape',
@@ -33,19 +42,21 @@ function Home() {
       })
       .then((photos) => {
         setPhotos(photos.response?.results);
-      });
+      })
+      .catch(error => console.error(error))
   }, [page, topic, sorting]);
 
   useEffect(() => {
-    api.topics
-      .list({
-        page: 1,
-        perPage: 10,
-      })
+      getCategories()
       .then((topics) => {
         setCategories(topics.response?.results);
-      });
+      })
+      .catch(error => console.error(error))
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem('items', JSON.stringify(likes));
+  }, [likes]);
   return (
     <div className={styles.wrapper}>
       <div className={styles.controls}>
@@ -59,7 +70,7 @@ function Home() {
           ))}
         </ul>
         <Select
-          sx={{ marginRight: 4 }}
+          sx={{ marginRight: 4, color: '#767676' }}
           variant="standard"
           value={sorting}
           onChange={sortingHandler}
@@ -70,14 +81,7 @@ function Home() {
       </div>
       <div className={styles.photosWrapper}>
         {photos?.map((photo) => (
-          <Image
-            key={photo.id}
-            src={photo.urls.regular}
-            alt={photo.alt_description || 'Picture'}
-            width={380}
-            height={270}
-            priority
-          />
+          <Photo key={photo.id} photo={photo} addItem={addItem}/>
         ))}
       </div>
       <Pagination
@@ -93,5 +97,3 @@ function Home() {
     </div>
   );
 }
-
-export default Home;

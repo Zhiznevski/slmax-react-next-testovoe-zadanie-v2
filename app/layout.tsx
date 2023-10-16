@@ -3,6 +3,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Inter, Roboto } from 'next/font/google';
 import Footer from '@/components/Footer';
+import { Provider } from '@/components/Provider';
 
 const inter = Roboto({
   subsets: ['latin'],
@@ -18,9 +19,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className={inter.className}>
+        <Provider>
         <Header />
         <main>{children}</main>
         <Footer />
+        </Provider>
       </body>
     </html>
   );
